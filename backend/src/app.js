@@ -24,6 +24,8 @@ app.use(cors({
     // Allow requests from any localhost port in dev, or the configured CLIENT_URL in prod
     const allowed = [
       CLIENT_URL,
+      'https://ai-based-study-planner-git-main-sujalbharti313s-projects.vercel.app',
+      'https://ai-based-study-planner.vercel.app',
       'http://localhost:5173',
       'http://localhost:5174',
       'http://localhost:3000',
