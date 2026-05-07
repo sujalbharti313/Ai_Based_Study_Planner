@@ -1,0 +1,488 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════
+   TAILWIND STATIC TOKENS  (compile-time — for utility classes)
+   These are the dark-mode defaults baked into Tailwind utilities.
+   Runtime theming is handled by [data-theme] CSS vars below.
+═══════════════════════════════════════════════════════════════ */
+@theme {
+  --color-primary:                  #adc6ff;
+  --color-on-primary:               #002e6a;
+  --color-primary-container:        #4d8eff;
+  --color-on-primary-container:     #00285d;
+  --color-primary-fixed:            #d8e2ff;
+  --color-primary-fixed-dim:        #adc6ff;
+  --color-inverse-primary:          #005ac2;
+  --color-surface-tint:             #adc6ff;
+
+  --color-secondary:                #d0bcff;
+  --color-on-secondary:             #3c0091;
+  --color-secondary-container:      #571bc1;
+  --color-on-secondary-container:   #c4abff;
+
+  --color-tertiary:                 #ffb786;
+  --color-on-tertiary:              #502400;
+  --color-tertiary-container:       #df7412;
+
+  --color-error:                    #ffb4ab;
+  --color-on-error:                 #690005;
+  --color-error-container:          #93000a;
+  --color-on-error-container:       #ffdad6;
+
+  --color-surface:                  #10131a;
+  --color-surface-dim:              #10131a;
+  --color-surface-bright:           #363941;
+  --color-surface-container-lowest: #0b0e15;
+  --color-surface-container-low:    #191b23;
+  --color-surface-container:        #1d2027;
+  --color-surface-container-high:   #272a31;
+  --color-surface-container-highest:#32353c;
+  --color-surface-variant:          #32353c;
+  --color-on-surface:               #e1e2ec;
+  --color-on-surface-variant:       #c2c6d6;
+  --color-inverse-surface:          #e1e2ec;
+  --color-inverse-on-surface:       #2e3038;
+  --color-background:               #10131a;
+  --color-on-background:            #e1e2ec;
+  --color-outline:                  #8c909f;
+  --color-outline-variant:          #424754;
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  --spacing-unit:             8px;
+  --spacing-gutter:           24px;
+  --spacing-container-margin: 32px;
+  --spacing-card-padding:     24px;
+  --spacing-stack-gap:        16px;
+
+  --radius-sm:      0.25rem;
+  --radius-DEFAULT: 0.5rem;
+  --radius-md:      0.75rem;
+  --radius-lg:      1rem;
+  --radius-xl:      1.5rem;
+  --radius-2xl:     2rem;
+  --radius-full:    9999px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RUNTIME THEME TOKENS  (applied via [data-theme] on <html>)
+   All component styles reference these vars — swap theme = swap UI.
+═══════════════════════════════════════════════════════════════ */
+
+/* ── DARK THEME (default) ── */
+[data-theme="dark"] {
+  /* Accent */
+  --t-primary:            #adc6ff;
+  --t-primary-soft:       rgba(173, 198, 255, 0.12);
+  --t-primary-border:     rgba(173, 198, 255, 0.25);
+  --t-secondary:          #d0bcff;
+  --t-secondary-soft:     rgba(208, 188, 255, 0.12);
+  --t-tertiary:           #ffb786;
+  --t-tertiary-soft:      rgba(255, 183, 134, 0.12);
+  --t-error:              #ffb4ab;
+  --t-error-soft:         rgba(255, 180, 171, 0.12);
+  --t-success:            #6ee7b7;
+  --t-success-soft:       rgba(110, 231, 183, 0.12);
+
+  /* Backgrounds */
+  --t-bg:                 #0d1117;
+  --t-bg-elevated:        #161b22;
+  --t-surface:            #10131a;
+  --t-surface-low:        #191b23;
+  --t-surface-mid:        #1d2027;
+  --t-surface-high:       #272a31;
+  --t-surface-highest:    #32353c;
+
+  /* Text */
+  --t-text:               #e6edf3;
+  --t-text-muted:         #8b949e;
+  --t-text-subtle:        #6e7681;
+
+  /* Borders */
+  --t-border:             rgba(255, 255, 255, 0.08);
+  --t-border-strong:      rgba(255, 255, 255, 0.16);
+  --t-border-focus:       rgba(173, 198, 255, 0.5);
+
+  /* Cards */
+  --t-card-bg:            rgba(22, 27, 34, 0.85);
+  --t-card-border:        rgba(255, 255, 255, 0.07);
+  --t-card-hover-border:  rgba(255, 255, 255, 0.14);
+  --t-card-shadow:        0 4px 24px rgba(0, 0, 0, 0.4);
+  --t-card-hover-shadow:  0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(173,198,255,0.06);
+
+  /* AI glow card */
+  --t-glow-bg:            rgba(13, 17, 23, 0.95);
+  --t-glow-border-start:  #adc6ff;
+  --t-glow-border-end:    #d0bcff;
+  --t-glow-shadow:        0 0 32px rgba(173, 198, 255, 0.14);
+
+  /* Input */
+  --t-input-bg:           #0b0e15;
+  --t-input-shadow:       inset 0 2px 6px rgba(0, 0, 0, 0.55);
+
+  /* Scrollbar */
+  --t-scrollbar-track:    #0b0e15;
+  --t-scrollbar-thumb:    #424754;
+
+  /* Sidebar */
+  --t-sidebar-bg:         rgba(11, 14, 21, 0.9);
+  --t-sidebar-border:     rgba(255, 255, 255, 0.06);
+
+  /* Header */
+  --t-header-bg:          rgba(16, 19, 26, 0.8);
+  --t-header-border:      rgba(255, 255, 255, 0.06);
+
+  /* Toggle */
+  --t-toggle-off:         #272a31;
+  --t-toggle-thumb:       #ffffff;
+
+  /* Overlay */
+  --t-overlay:            rgba(0, 0, 0, 0.65);
+
+  /* Gradient text */
+  --t-grad-start:         #adc6ff;
+  --t-grad-end:           #d0bcff;
+
+  /* Focus ring */
+  --t-focus-ring:         #adc6ff;
+
+  /* Nav active */
+  --t-nav-active-bg:      rgba(173, 198, 255, 0.1);
+  --t-nav-active-text:    #adc6ff;
+  --t-nav-active-border:  #adc6ff;
+  --t-nav-hover-bg:       rgba(255, 255, 255, 0.05);
+}
+
+/* ── LIGHT THEME ── */
+[data-theme="light"] {
+  /* Accent — slightly deeper for contrast on white */
+  --t-primary:            #2563eb;
+  --t-primary-soft:       rgba(37, 99, 235, 0.08);
+  --t-primary-border:     rgba(37, 99, 235, 0.25);
+  --t-secondary:          #7c3aed;
+  --t-secondary-soft:     rgba(124, 58, 237, 0.08);
+  --t-tertiary:           #ea580c;
+  --t-tertiary-soft:      rgba(234, 88, 12, 0.08);
+  --t-error:              #dc2626;
+  --t-error-soft:         rgba(220, 38, 38, 0.08);
+  --t-success:            #059669;
+  --t-success-soft:       rgba(5, 150, 105, 0.08);
+
+  /* Backgrounds */
+  --t-bg:                 #f6f8fa;
+  --t-bg-elevated:        #ffffff;
+  --t-surface:            #ffffff;
+  --t-surface-low:        #f0f2f5;
+  --t-surface-mid:        #e8eaed;
+  --t-surface-high:       #dde1e7;
+  --t-surface-highest:    #d0d5dd;
+
+  /* Text */
+  --t-text:               #0d1117;
+  --t-text-muted:         #57606a;
+  --t-text-subtle:        #8c959f;
+
+  /* Borders */
+  --t-border:             rgba(0, 0, 0, 0.08);
+  --t-border-strong:      rgba(0, 0, 0, 0.16);
+  --t-border-focus:       rgba(37, 99, 235, 0.5);
+
+  /* Cards */
+  --t-card-bg:            #ffffff;
+  --t-card-border:        rgba(0, 0, 0, 0.07);
+  --t-card-hover-border:  rgba(37, 99, 235, 0.2);
+  --t-card-shadow:        0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+  --t-card-hover-shadow:  0 4px 20px rgba(0,0,0,0.1), 0 0 0 1px rgba(37,99,235,0.1);
+
+  /* AI glow card */
+  --t-glow-bg:            #ffffff;
+  --t-glow-border-start:  #2563eb;
+  --t-glow-border-end:    #7c3aed;
+  --t-glow-shadow:        0 4px 24px rgba(37, 99, 235, 0.12);
+
+  /* Input */
+  --t-input-bg:           #f0f2f5;
+  --t-input-shadow:       inset 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  /* Scrollbar */
+  --t-scrollbar-track:    #f0f2f5;
+  --t-scrollbar-thumb:    #d0d5dd;
+
+  /* Sidebar */
+  --t-sidebar-bg:         rgba(255, 255, 255, 0.95);
+  --t-sidebar-border:     rgba(0, 0, 0, 0.07);
+
+  /* Header */
+  --t-header-bg:          rgba(255, 255, 255, 0.85);
+  --t-header-border:      rgba(0, 0, 0, 0.07);
+
+  /* Toggle */
+  --t-toggle-off:         #e8eaed;
+  --t-toggle-thumb:       #ffffff;
+
+  /* Overlay */
+  --t-overlay:            rgba(0, 0, 0, 0.4);
+
+  /* Gradient text */
+  --t-grad-start:         #2563eb;
+  --t-grad-end:           #7c3aed;
+
+  /* Focus ring */
+  --t-focus-ring:         #2563eb;
+
+  /* Nav active */
+  --t-nav-active-bg:      rgba(37, 99, 235, 0.08);
+  --t-nav-active-text:    #2563eb;
+  --t-nav-active-border:  #2563eb;
+  --t-nav-hover-bg:       rgba(0, 0, 0, 0.04);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BASE STYLES
+═══════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  /* Prevent theme flash — set before React hydrates */
+  color-scheme: dark light;
+}
+
+body {
+  background-color: var(--t-bg);
+  color: var(--t-text);
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  /* Smooth theme transition on body-level properties */
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--t-scrollbar-track); }
+::-webkit-scrollbar-thumb { background: var(--t-scrollbar-thumb); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--t-text-subtle); }
+
+/* ── Focus ring ── */
+:focus-visible {
+  outline: 2px solid var(--t-focus-ring);
+  outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT UTILITY CLASSES  (theme-aware)
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Glass / Card ── */
+.glass-card {
+  background: var(--t-card-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--t-card-border);
+  box-shadow: var(--t-card-shadow);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.25s ease;
+}
+.glass-card:hover {
+  border-color: var(--t-card-hover-border);
+  box-shadow: var(--t-card-hover-shadow);
+}
+
+/* ── AI Glow Card ── */
+.ai-glow-card {
+  background: var(--t-glow-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid transparent;
+  background-image:
+    linear-gradient(var(--t-glow-bg), var(--t-glow-bg)),
+    linear-gradient(135deg, var(--t-glow-border-start) 0%, var(--t-glow-border-end) 100%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: var(--t-glow-shadow);
+  transition: box-shadow 0.25s ease, background-color 0.25s ease;
+}
+
+/* ── Recessed input ── */
+.recessed {
+  background: var(--t-input-bg);
+  box-shadow: var(--t-input-shadow);
+  transition: background-color 0.25s ease;
+}
+
+/* ── Gradient text ── */
+.gradient-text {
+  background: linear-gradient(135deg, var(--t-grad-start) 0%, var(--t-grad-end) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Text glow (dark only, subtle in light) ── */
+[data-theme="dark"]  .text-glow { text-shadow: 0 0 12px rgba(173, 198, 255, 0.55); }
+[data-theme="light"] .text-glow { text-shadow: none; }
+
+/* ── Sidebar ── */
+.t-sidebar {
+  background: var(--t-sidebar-bg);
+  border-right: 1px solid var(--t-sidebar-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: background-color 0.25s ease;
+}
+
+/* ── Header ── */
+.t-header {
+  background: var(--t-header-bg);
+  border-bottom: 1px solid var(--t-header-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: background-color 0.25s ease;
+}
+
+/* ── Nav item ── */
+.nav-item {
+  color: var(--t-text-muted);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.nav-item:hover {
+  background: var(--t-nav-hover-bg);
+  color: var(--t-text);
+}
+.nav-item-active {
+  background: var(--t-nav-active-bg);
+  color: var(--t-nav-active-text);
+  border-left: 3px solid var(--t-nav-active-border);
+}
+
+/* ── Surface backgrounds ── */
+.t-bg          { background-color: var(--t-bg); }
+.t-surface     { background-color: var(--t-surface); }
+.t-surface-low { background-color: var(--t-surface-low); }
+.t-surface-mid { background-color: var(--t-surface-mid); }
+.t-surface-high{ background-color: var(--t-surface-high); }
+
+/* ── Text ── */
+.t-text        { color: var(--t-text); }
+.t-text-muted  { color: var(--t-text-muted); }
+.t-text-subtle { color: var(--t-text-subtle); }
+.t-primary     { color: var(--t-primary); }
+.t-secondary   { color: var(--t-secondary); }
+.t-tertiary    { color: var(--t-tertiary); }
+.t-error       { color: var(--t-error); }
+.t-success     { color: var(--t-success); }
+
+/* ── Border ── */
+.t-border      { border-color: var(--t-border); }
+.t-border-strong { border-color: var(--t-border-strong); }
+
+/* ── Overlay ── */
+.t-overlay     { background: var(--t-overlay); }
+
+/* ── Theme transition — applied to all interactive elements ── */
+.theme-transition {
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   THEME TOGGLE SWITCH
+═══════════════════════════════════════════════════════════════ */
+.theme-toggle {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  border-radius: 9999px;
+  background: var(--t-toggle-off);
+  border: 1px solid var(--t-border-strong);
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  flex-shrink: 0;
+}
+.theme-toggle[data-active="true"] {
+  background: var(--t-primary);
+  border-color: transparent;
+}
+.theme-toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  background: var(--t-toggle-thumb);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.theme-toggle[data-active="true"] .theme-toggle-thumb {
+  transform: translateX(24px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════════════════════════ */
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+@keyframes theme-pop {
+  0%   { transform: scale(0.85); opacity: 0; }
+  60%  { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-pulse-slow  { animation: pulse-slow  3s ease-in-out infinite; }
+.animate-spin-slow   { animation: spin-slow   20s linear infinite; }
+.animate-shimmer     { animation: shimmer     2.5s ease-in-out infinite; }
+.animate-float       { animation: float       4s ease-in-out infinite; }
+.animate-theme-pop   { animation: theme-pop   0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT MODE OVERRIDES  (components that need explicit light styles)
+═══════════════════════════════════════════════════════════════ */
+[data-theme="light"] body {
+  background-color: var(--t-bg);
+}
+
+/* Light mode — softer glow effects */
+[data-theme="light"] .ai-glow-card {
+  box-shadow: 0 4px 24px rgba(37, 99, 235, 0.1), 0 1px 3px rgba(0,0,0,0.06);
+}
+
+/* Light mode — card shadows feel more paper-like */
+[data-theme="light"] .glass-card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Light mode — recessed inputs look sunken */
+[data-theme="light"] .recessed {
+  background: var(--t-input-bg);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.06);
+}
+
+/* Light mode — scrollbar */
+[data-theme="light"] ::-webkit-scrollbar-track { background: #f0f2f5; }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: #d0d5dd; }

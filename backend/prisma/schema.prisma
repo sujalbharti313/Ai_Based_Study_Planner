@@ -1,0 +1,297 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+//  NOTE: SQLite does not support enums or Json.
+//  Enums → String with allowed values enforced in app layer.
+//  Json  → String (serialised JSON).
+// ─────────────────────────────────────────────
+
+// ── USER ─────────────────────────────────────
+// role: "USER" | "ADMIN"
+model User {
+  id                  String    @id @default(uuid())
+  email               String    @unique
+  passwordHash        String
+  name                String
+  designation         String?
+  avatarUrl           String?
+  role                String    @default("USER")
+  isEmailVerified     Boolean   @default(false)
+  emailVerifyToken    String?
+  passwordResetToken  String?
+  passwordResetExpiry DateTime?
+  refreshToken        String?
+  storageUsedMb       Float     @default(0)
+  storageLimitMb      Float     @default(10240)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  subjects        Subject[]
+  tasks           Task[]
+  timetableEvents TimetableEvent[]
+  studySessions   StudySession[]
+  activityLogs    ActivityLog[]
+  achievements    UserAchievement[]
+  notifications   Notification[]
+  integrations    Integration[]
+  aiConversations AIConversation[]
+  settings        UserSettings?
+  studyStreak     StudyStreak?
+
+  @@index([email])
+}
+
+// ── SUBJECT ───────────────────────────────────
+// priority: "low" | "planning" | "active" | "high" | "done"
+model Subject {
+  id         String    @id @default(uuid())
+  userId     String
+  name       String
+  topic      String?
+  icon       String    @default("BookOpen")
+  color      String    @default("#adc6ff")
+  badgeColor String    @default("primary")
+  priority   String    @default("active")
+  complexity Int       @default(3)
+  progress   Int       @default(0)
+  deadline   DateTime?
+  context    String?
+  isArchived Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks           Task[]
+  timetableEvents TimetableEvent[]
+  studySessions   StudySession[]
+  modules         SubjectModule[]
+
+  @@index([userId])
+  @@index([userId, priority])
+  @@index([userId, deadline])
+}
+
+// ── SUBJECT MODULE ────────────────────────────
+model SubjectModule {
+  id          String    @id @default(uuid())
+  subjectId   String
+  title       String
+  description String?
+  order       Int       @default(0)
+  isCompleted Boolean   @default(false)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@index([subjectId])
+}
+
+// ── TASK ──────────────────────────────────────
+// status: "pending" | "in_progress" | "done"
+model Task {
+  id          String    @id @default(uuid())
+  userId      String
+  subjectId   String?
+  text        String
+  status      String    @default("pending")
+  isPriority  Boolean   @default(false)
+  dueDate     DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([userId, dueDate])
+}
+
+// ── TIMETABLE EVENT ───────────────────────────
+model TimetableEvent {
+  id          String   @id @default(uuid())
+  userId      String
+  subjectId   String?
+  title       String
+  topic       String?
+  color       String   @default("primary")
+  dayOfWeek   Int
+  slotIndex   Int
+  spanSlots   Int      @default(1)
+  isHighlight Boolean  @default(false)
+  weekStart   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+
+  @@index([userId, weekStart])
+}
+
+// ── STUDY SESSION ─────────────────────────────
+model StudySession {
+  id          String    @id @default(uuid())
+  userId      String
+  subjectId   String?
+  startedAt   DateTime  @default(now())
+  endedAt     DateTime?
+  durationMin Int?
+  notes       String?
+  aiOptimized Boolean   @default(false)
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([userId, startedAt])
+}
+
+// ── STUDY STREAK ──────────────────────────────
+// dailyData: JSON string → "[{\"date\":\"2024-01-01\",\"minutesStudied\":60}]"
+model StudyStreak {
+  id            String    @id @default(uuid())
+  userId        String    @unique
+  currentStreak Int       @default(0)
+  longestStreak Int       @default(0)
+  lastStudyDate DateTime?
+  dailyData     String    @default("[]")
+  updatedAt     DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ── ACTIVITY LOG ──────────────────────────────
+// type: "quiz_completed"|"notes_annotated"|"ai_session"|"chapter_started"
+//       "subject_created"|"task_completed"|"streak_milestone"|"achievement_unlocked"
+// meta: JSON string
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String
+  title     String
+  detail    String?
+  meta      String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, createdAt])
+}
+
+// ── ACHIEVEMENT ───────────────────────────────
+model Achievement {
+  id          String  @id @default(uuid())
+  key         String  @unique
+  label       String
+  description String?
+  icon        String  @default("Trophy")
+  gradient    String  @default("from-primary to-secondary")
+  threshold   Int?
+
+  users UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(uuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+}
+
+// ── NOTIFICATION ──────────────────────────────
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  body      String
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+}
+
+// ── INTEGRATION ───────────────────────────────
+// provider: "google_calendar" | "notion" | "github"
+model Integration {
+  id           String    @id @default(uuid())
+  userId       String
+  provider     String
+  accessToken  String?
+  refreshToken String?
+  expiresAt    DateTime?
+  isConnected  Boolean   @default(false)
+  lastSyncedAt DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, provider])
+  @@index([userId])
+}
+
+// ── AI CONVERSATION ───────────────────────────
+model AIConversation {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String   @default("New Conversation")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages AIMessage[]
+
+  @@index([userId])
+}
+
+// ── AI MESSAGE ────────────────────────────────
+// sender: "user" | "ai"
+model AIMessage {
+  id             String   @id @default(uuid())
+  conversationId String
+  sender         String
+  content        String
+  tokensUsed     Int?
+  createdAt      DateTime @default(now())
+
+  conversation AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+}
+
+// ── USER SETTINGS ─────────────────────────────
+model UserSettings {
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  theme              String   @default("dark")
+  notifyDeadlines    Boolean  @default(true)
+  notifyAiInsights   Boolean  @default(true)
+  notifyPeerActivity Boolean  @default(false)
+  notifyWeeklyReport Boolean  @default(true)
+  aiPriorityScore    Int      @default(0)
+  peakStudyHour      Int?
+  peakStudyDay       String?
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
